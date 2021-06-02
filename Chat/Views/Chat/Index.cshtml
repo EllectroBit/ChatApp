@@ -1,0 +1,30 @@
+﻿@model List<Chat.Models.User>
+
+@{
+    ViewData["Title"] = "Chat";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div>
+    <ul>
+        @if (Model.Count > 0)
+        {
+            @foreach (User u in Model)
+            {
+                <li><a asp-action="OpenChat" asp-controller="Chat" asp-route-UserId="@u.ID">@u.EMail|(@NewMessages(u.EMail))</a></li>
+            }
+        }
+    </ul>
+</div>
+
+
+@{ 
+    string NewMessages(string EMail)
+    {
+        Dictionary<string, int> d = (Dictionary<string, int>)ViewData["NewMessages"];
+        int res = 0;
+        d.TryGetValue(EMail, out res);
+        return $"{res} New Messages";
+    }
+}

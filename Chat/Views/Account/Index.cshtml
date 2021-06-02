@@ -1,0 +1,23 @@
+﻿@model Chat.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+    <div>
+        <form asp-action="Login" asp-controller="Account">
+            <h1>Login</h1>
+            <lable>EMail</lable>
+            <input style="display: block" name="Email" autocomplete="off" type="text">
+            <label>Password</label>
+            <input style="display: block" name="Password" autocomplete="off" type="password">
+            <a asp-action="Register" asp-controller="Account">Register?</a>
+            <input style="display: block" type="submit" value="Submit">
+        </form>
+    </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

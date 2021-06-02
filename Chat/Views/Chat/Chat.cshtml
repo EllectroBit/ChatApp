@@ -1,0 +1,27 @@
+﻿@model Chat.Models.ChatHub
+
+@{
+    ViewData["Title"] = "Chat";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+    <div>
+        <a id="frameUpdate" style="display: block" asp-action="Update" asp-route-id="@Model.ID" target="frame">Update</a>
+        <iframe id="frame" name="frame" src="" width="1000" height="500"></iframe>
+
+        <form id="form" asp-action="SendMessage" method="post">
+            <textarea name="message"></textarea>
+            <input type="hidden" name="id" value="@Model.ID" />
+            <input type="hidden" name="UserID" value="@ViewData["UserID"]" />
+            <input id="submit" type="submit" name="submit" value="Send" />
+        </form>
+    </div>
+
+    <script>
+        //setInterval(() => document.getElementById("frame").src = "/Chat/Update/@Model.ID", 1000)        
+    </script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

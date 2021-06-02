@@ -1,0 +1,28 @@
+﻿@model List<Chat.Models.Message>
+@{
+    ViewData["Title"] = "Chat";
+    Layout = "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        @if (Model.Count > 0)
+        {
+            foreach (var m in Model)
+            {
+                <li>
+                    <span>@m.DateTime</span>
+                    <span style="font-weight: bold">@m.Sender.EMail:</span>
+                    <span style="display: block">@m.Text</span>
+                </li>
+            }
+        }
+    </ul>
+</body>
+</html>
