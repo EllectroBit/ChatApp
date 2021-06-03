@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Chat.Interfaces
 {
@@ -14,5 +15,6 @@ namespace Chat.Interfaces
         Task<User> GetUserAsync(LoginViewModel lv);
         Task<User> GetUserAsync(int id);
         Task AddUserAsync(User user);
+        Task Authenticate(User user, HttpContext httpContext);
     }
 }

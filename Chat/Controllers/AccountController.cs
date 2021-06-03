@@ -30,7 +30,7 @@ namespace Chat.Controllers
                 User user = await db.GetUserAsync(login);
                 if (user != null)
                 {
-                    await Authenticate(user);
+                    await db.Authenticate(user, HttpContext);//Authenticate(user);
                     return RedirectToAction("Index", "Chat");
                 }
                 else
@@ -55,7 +55,7 @@ namespace Chat.Controllers
                     user = new User { EMail = model.EMail, Password = model.Password };
                     await db.AddUserAsync(user);
 
-                    await Authenticate(user);
+                    await db.Authenticate(user, HttpContext);//Authenticate(user);
 
                     return RedirectToAction("Index", "Chat");
                 }
@@ -72,21 +72,21 @@ namespace Chat.Controllers
         }
 
         [AcceptVerbs("Get", "Post")]
-        public async Task<IActionResult> CheckEMail(string email)
+        public async Task<IActionResult> CheckEMailAsync(string email)
         {
             List<User> users = await db.GetUsersAsync();
             return Json(!users.Any(x => x.EMail == email));
         }
 
-        private async Task Authenticate(User user)
-        {
-            List<Claim> claims = new List<Claim>()
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.EMail)
-            };
+        //private async Task Authenticate(User user)
+        //{
+        //    List<Claim> claims = new List<Claim>()
+        //    {
+        //        new Claim(ClaimsIdentity.DefaultNameClaimType, user.EMail)
+        //    };
 
-            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
-        }
+        //    ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+        //    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
+        //}
     }
 }
