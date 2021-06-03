@@ -19,7 +19,10 @@
     </div>
 
     <script>
-        //setInterval(() => document.getElementById("frame").src = "/Chat/Update/@Model.ID", 1000)        
+        //setInterval(update, 1000)
+        function update() {
+            document.getElementById("frame").src = "/Chat/Update/@Model.ID"
+        }
     </script>
 
 @section Scripts {

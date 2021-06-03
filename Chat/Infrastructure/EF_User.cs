@@ -29,16 +29,5 @@ namespace Chat.Infrustructure
         public List<User> GetUsers() => db.Users.ToList();
 
         public async Task<List<User>> GetUsersAsync() => await db.Users.ToListAsync();
-
-        public async Task Authenticate(User user, HttpContext httpContext)
-        {
-            List<Claim> claims = new List<Claim>()
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.EMail)
-            };
-
-            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-            await Microsoft.AspNetCore.Authentication.AuthenticationHttpContextExtensions.SignInAsync(httpContext, CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
-        }
     }
 }

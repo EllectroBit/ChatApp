@@ -16,8 +16,13 @@ namespace Chat.Controllers
     public class AccountController : Controller
     {
         private IUser db;
+        private IIdentity identity;
 
-        public AccountController(IUser db) => this.db = db;
+        public AccountController(IUser db, IIdentity identity)
+        {
+            this.db = db;
+            this.identity = identity;
+        }
 
         public IActionResult Index() => View();
 
@@ -30,7 +35,7 @@ namespace Chat.Controllers
                 User user = await db.GetUserAsync(login);
                 if (user != null)
                 {
-                    await db.Authenticate(user, HttpContext);//Authenticate(user);
+                    await identity.Authenticate(user, HttpContext);//Authenticate(user);
                     return RedirectToAction("Index", "Chat");
                 }
                 else
@@ -55,7 +60,7 @@ namespace Chat.Controllers
                     user = new User { EMail = model.EMail, Password = model.Password };
                     await db.AddUserAsync(user);
 
-                    await db.Authenticate(user, HttpContext);//Authenticate(user);
+                    await identity.Authenticate(user, HttpContext);//Authenticate(user);
 
                     return RedirectToAction("Index", "Chat");
                 }
@@ -67,7 +72,7 @@ namespace Chat.Controllers
 
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync();
+            await identity.LogOut(HttpContext);
             return RedirectToAction("Index");
         }
 

@@ -18,17 +18,19 @@ namespace Chat.Controllers
     {
         private IChat db;
         private IUser udb;
+        private IIdentity identity;
 
-        public ChatController(IChat chatDB, IUser userDB)
+        public ChatController(IChat chatDB, IUser userDB, IIdentity identity)
         {
             db = chatDB;
             udb = userDB;
+            this.identity = identity;
         }
 
         public IActionResult Index()
         {
-            List<User> users = udb.GetUsersAsync().Result.Where(x => x.EMail != User.Identity.Name).ToList();
-            ViewData["NewMessages"] = db.GetNewMessagesCount(User.Identity.Name);
+            List<User> users = udb.GetUsersAsync().Result.Where(x => x.EMail != identity.GetCurrentUserName(HttpContext)).ToList();
+            ViewData["NewMessages"] = db.GetNewMessagesCount(identity.GetCurrentUserName(HttpContext));
             return View(users);
         }
 
@@ -36,12 +38,12 @@ namespace Chat.Controllers
         public async Task<IActionResult> OpenChat(int UserId)
         {
             string SecondUser = udb.GetUserAsync(UserId).Result.EMail;
-            ChatHub chat = await db.GetChatAsync(User.Identity.Name, SecondUser);
+            ChatHub chat = await db.GetChatAsync(identity.GetCurrentUserName(HttpContext), SecondUser);
             if(chat == null)
             {
-                chat = await db.GetChatAsync(SecondUser, User.Identity.Name);
+                chat = await db.GetChatAsync(SecondUser, identity.GetCurrentUserName(HttpContext));
                 if (chat == null)
-                    chat = await db.AddChatAsync(new ChatHub() { FirstUser = User.Identity.Name, SecondUser = SecondUser });
+                    chat = await db.AddChatAsync(new ChatHub() { FirstUser = identity.GetCurrentUserName(HttpContext), SecondUser = SecondUser });
             }
 
             ViewData["UserID"] = UserId;
@@ -55,7 +57,7 @@ namespace Chat.Controllers
             {
                 Text = message,
                 DateTime = DateTime.Now,
-                Sender = udb.GetUsersAsync().Result.Where(x => x.EMail == User.Identity.Name).FirstOrDefault(),
+                Sender = udb.GetUsersAsync().Result.Where(x => x.EMail == identity.GetCurrentUserName(HttpContext)).FirstOrDefault(),
                 ChatHubID = id
             });
             return RedirectToAction("OpenChat", new { UserID = UserID });
@@ -67,10 +69,10 @@ namespace Chat.Controllers
             List<Message> messages = await db.GetMessagesAsync(id);
             foreach(var m in messages)
             {
-                if (!m.Checked && m.Sender.EMail != User.Identity.Name)
+                if (!m.Checked && m.Sender.EMail != identity.GetCurrentUserName(HttpContext))
                     await db.SetMessageCheckedAsync(m.ID);
             }
-            return View(await db.GetMessagesAsync(id));
+            return View("Update" , await db.GetMessagesAsync(id));
         }
     }
 }

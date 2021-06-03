@@ -23,7 +23,8 @@ namespace Chat.Test
         {
             //Arrange
             var mock = new Mock<IUser>();
-            var controller = new AccountController(mock.Object);
+            var mockI = new Mock<IIdentity>();
+            var controller = new AccountController(mock.Object, mockI.Object);
             //Act
             var model = controller.Index();
             //Assert
@@ -35,7 +36,8 @@ namespace Chat.Test
         {
             //Arrange
             var mock = new Mock<IUser>();
-            var controller = new AccountController(mock.Object);
+            var mockI = new Mock<IIdentity>();
+            var controller = new AccountController(mock.Object, mockI.Object);
             //Act
             var model = controller.Register();
             //Assert
@@ -49,7 +51,8 @@ namespace Chat.Test
             LoginViewModel login = new LoginViewModel();
 
             var mock = new Mock<IUser>();
-            var controller = new AccountController(mock.Object);
+            var mockI = new Mock<IIdentity>();
+            var controller = new AccountController(mock.Object, mockI.Object);
             controller.ModelState.AddModelError("Email", "Wrong Email");
             //Act
             ViewResult result = (ViewResult)await controller.Login(login);
@@ -66,7 +69,8 @@ namespace Chat.Test
             var mock = new Mock<IUser>();
             User user = null;
             mock.Setup(m => m.GetUserAsync(login)).ReturnsAsync(user);
-            var controller = new AccountController(mock.Object);
+            var mockI = new Mock<IIdentity>();
+            var controller = new AccountController(mock.Object, mockI.Object);
             //Act
             ViewResult result = (ViewResult)await controller.Login(login);
             //Assert
@@ -83,14 +87,15 @@ namespace Chat.Test
 
             var mock = new Mock<IUser>();
             mock.Setup(m => m.GetUserAsync(login)).ReturnsAsync(user);
-            var controller = new AccountController(mock.Object);
+            var mockI = new Mock<IIdentity>();
+            var controller = new AccountController(mock.Object, mockI.Object); ;
             //Act
             RedirectToActionResult result = (RedirectToActionResult)await controller.Login(login);
             //Assert
             Assert.True(controller.ModelState.IsValid);
             Assert.Equal("Chat", result.ControllerName);
             Assert.Equal("Index", result.ActionName);
-            mock.Verify(x => x.Authenticate(user, controller.HttpContext));
+            mockI.Verify(x => x.Authenticate(user, controller.HttpContext));
         }
 
         [Fact]
@@ -100,7 +105,8 @@ namespace Chat.Test
             RegisterViewModel reg = new RegisterViewModel();
 
             var mock = new Mock<IUser>();
-            var controller = new AccountController(mock.Object);
+            var mockI = new Mock<IIdentity>();
+            var controller = new AccountController(mock.Object, mockI.Object);
             controller.ModelState.AddModelError("Email", "Wrong Email");
             //Act
             ViewResult result = (ViewResult)await controller.Register(reg);
@@ -117,7 +123,8 @@ namespace Chat.Test
             var mock = new Mock<IUser>();
             List<User> users = new List<User>() { new User() { EMail = "email@mail.com", ID = 1, Password = "1111" } };
             mock.Setup(m => m.GetUsersAsync()).ReturnsAsync(users);
-            var controller = new AccountController(mock.Object);
+            var mockI = new Mock<IIdentity>();
+            var controller = new AccountController(mock.Object, mockI.Object); ;
             //Act
             ViewResult result = (ViewResult)await controller.Register(reg);
             //Assert
@@ -137,13 +144,14 @@ namespace Chat.Test
             List<User> users = new List<User>();
             mock.Setup(m => m.GetUsersAsync()).ReturnsAsync(users);
             mock.Setup(m => m.AddUserAsync(It.IsAny<User>()));
-            var controller = new AccountController(mock.Object);
+            var mockI = new Mock<IIdentity>();
+            var controller = new AccountController(mock.Object, mockI.Object);
             //Act
             RedirectToActionResult result = (RedirectToActionResult)await controller.Register(reg);
             //Assert
             Assert.True(controller.ModelState.IsValid);
             mock.Verify(x => x.AddUserAsync(It.IsAny<User>()));
-            mock.Verify(x => x.Authenticate(It.IsAny<User>(), controller.HttpContext));
+            mockI.Verify(x => x.Authenticate(It.IsAny<User>(), controller.HttpContext));
             Assert.Equal("Index", result.ActionName);
         }
 
@@ -155,11 +163,26 @@ namespace Chat.Test
 
             var mock = new Mock<IUser>();
             mock.Setup(x => x.GetUsersAsync()).ReturnsAsync(users);
-            var controller = new AccountController(mock.Object);
+            var mockI = new Mock<IIdentity>();
+            var controller = new AccountController(mock.Object, mockI.Object);
             //Act
             JsonResult result = (JsonResult)await controller.CheckEMailAsync("email@mail.com");
             //Assert
             Assert.Equal(false, result.Value);
+        }
+
+        [Fact]
+        public async Task LogoutSingsOutAndRedirectsToIndex()
+        {
+            //Arrange
+            var mock = new Mock<IUser>();
+            var mockI = new Mock<IIdentity>();
+            var controller = new AccountController(mock.Object, mockI.Object);
+            //Act
+            RedirectToActionResult result = (RedirectToActionResult)await controller.Logout();
+            //Assert
+            mockI.Verify(x => x.LogOut(controller.HttpContext));
+            Assert.Equal("Index", result.ActionName);
         }
     }
 }

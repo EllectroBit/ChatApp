@@ -30,6 +30,7 @@ namespace Chat
             services.AddDbContext<ChatContext>(option => option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IChat, EF_Chat>();
             services.AddScoped<IUser, EF_User>();
+            services.AddScoped<IIdentity, Identity>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>

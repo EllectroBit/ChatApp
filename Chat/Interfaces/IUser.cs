@@ -15,6 +15,5 @@ namespace Chat.Interfaces
         Task<User> GetUserAsync(LoginViewModel lv);
         Task<User> GetUserAsync(int id);
         Task AddUserAsync(User user);
-        Task Authenticate(User user, HttpContext httpContext);
     }
 }
