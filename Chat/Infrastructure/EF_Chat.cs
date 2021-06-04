@@ -23,8 +23,6 @@ namespace Chat.Infrustructure
 
         public async Task AddMessageAsync(Message message)
         {
-            //ChatHub chat = await db.Chats.Include(x => x.Messages).Where(x => x.ID == ChatID).FirstOrDefaultAsync();
-            //chat.Messages.Add(message);
             db.Messages.Add(message);
             await db.SaveChangesAsync();
         }
@@ -35,10 +33,6 @@ namespace Chat.Infrustructure
 
         public async Task<List<Message>> GetMessagesAsync(int ChatID)
         {
-            //ChatHub chat = await db.Chats.Include(x => x.Messages).Where(x => x.ID == ChatID).FirstOrDefaultAsync();
-            //if(chat != null)
-            //    return chat.Messages
-            //return null;
             return await db.Messages.Include(x => x.Sender).Where(x => x.ChatHubID == ChatID).OrderByDescending(x => x.DateTime).ToListAsync();
         }
 

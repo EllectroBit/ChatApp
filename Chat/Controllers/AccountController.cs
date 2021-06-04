@@ -35,7 +35,7 @@ namespace Chat.Controllers
                 User user = await db.GetUserAsync(login);
                 if (user != null)
                 {
-                    await identity.Authenticate(user, HttpContext);//Authenticate(user);
+                    await identity.Authenticate(user, HttpContext);
                     return RedirectToAction("Index", "Chat");
                 }
                 else
@@ -60,7 +60,7 @@ namespace Chat.Controllers
                     user = new User { EMail = model.EMail, Password = model.Password };
                     await db.AddUserAsync(user);
 
-                    await identity.Authenticate(user, HttpContext);//Authenticate(user);
+                    await identity.Authenticate(user, HttpContext);
 
                     return RedirectToAction("Index", "Chat");
                 }
@@ -82,16 +82,5 @@ namespace Chat.Controllers
             List<User> users = await db.GetUsersAsync();
             return Json(!users.Any(x => x.EMail == email));
         }
-
-        //private async Task Authenticate(User user)
-        //{
-        //    List<Claim> claims = new List<Claim>()
-        //    {
-        //        new Claim(ClaimsIdentity.DefaultNameClaimType, user.EMail)
-        //    };
-
-        //    ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-        //    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
-        //}
     }
 }
